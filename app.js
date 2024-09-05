@@ -1,13 +1,10 @@
 /*-------------------------------- Constants --------------------------------*/
 
-const mythologyCategories = require('./data.js');
-
 /*---------------------------- Variables (state) ----------------------------*/
 
 let timer;
 let score = 0;
 let currentQuestionIndex = null;
-let squareIndex = null;
 
 /*------------------------ Cached Element References ------------------------*/
 
@@ -31,8 +28,11 @@ const init = () => {
 const render = () => {
     if (currentQuestionIndex !== null) {
         displayEl.textContent = mythologyCategories[currentQuestionIndex].question;
+        startCountdown(30);
     } else {
         displayEl.textContent = 'Click a square to start';
+        timerEl.textContent = '';
+        clearTimer();
     }
 };
 
@@ -42,9 +42,11 @@ const handleClick = (event) => {
         currentQuestionIndex = index;
         render();
     }
+    event.target.innerText = '';
 };
 
 const checkAnswer = () => {
+    if (currentQuestionIndex === null) return;
     const userAnswer = answerInput.value.toLowerCase();
     const correctAnswer = mythologyCategories[currentQuestionIndex].answer.toLowerCase();
     if (userAnswer === correctAnswer) {
@@ -54,18 +56,28 @@ const checkAnswer = () => {
     }
     scoreEl.textContent = `Score: ${score}`;
     answerInput.value = '';
+    currentQuestionIndex = null
+    render();
 }
 
 const startCountdown = (seconds) => {
     let counter = seconds;
+    timerEl.textContent = `Time left: ${counter}`
     timer = setInterval(() => {
         counter--;
+        timerEl.textContent = `Time left: ${counter}`
     if (counter <= 0) {
             clearInterval(timer);
             checkAnswer();
         }
-    }, 30 * 1000);
-    timerEl.textContent = `Time left: ${counter}`;
+    }, 1000);
+};
+
+const clearTimer = () => {
+    if (timer) {
+        clearInterval(timer);
+        timer = null;
+    }
 };
 
 
