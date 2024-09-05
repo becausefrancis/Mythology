@@ -1,5 +1,8 @@
 /*-------------------------------- Constants --------------------------------*/
 
+const correctAudio = new Audio('audio/correct.wav');
+const wrongAudio = new Audio('audio/wrong.mp3');
+
 /*---------------------------- Variables (state) ----------------------------*/
 
 let timer;
@@ -34,6 +37,7 @@ const render = () => {
         timerEl.textContent = '';
         clearTimer();
     }
+    checkGameOver();
 };
 
 const handleClick = (event) => {
@@ -51,8 +55,10 @@ const checkAnswer = () => {
     const correctAnswer = mythologyCategories[currentQuestionIndex].answer.toLowerCase();
     if (userAnswer === correctAnswer) {
         score += mythologyCategories[currentQuestionIndex].point;
+        correctAudio.play();
     } else {
         score -= mythologyCategories[currentQuestionIndex].point;
+        wrongAudio.play();
     }
     scoreEl.textContent = `Score: ${score}`;
     answerInput.value = '';
@@ -77,6 +83,17 @@ const clearTimer = () => {
     if (timer) {
         clearInterval(timer);
         timer = null;
+    }
+};
+
+const checkGameOver = () => {
+    const allSquaresEmpty = Array.from(squareEls).every(squareEl => squareEl.textContent === '');
+    if (allSquaresEmpty) {
+        if (score >= 0) {
+            displayEl.textContent = `Congrats, you have scored: ${score}.`;
+        } else {
+            displayEl.textContent = `Better luck next time! You have scored: ${score}.`;
+        }
     }
 };
 
